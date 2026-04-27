@@ -44,9 +44,9 @@ export default function Dashboard() {
     }
   }
 
-  async function handleCopy(shortUrl: string) {
-    await navigator.clipboard.writeText(`${window.location.origin}/${shortUrl}`)
-    setCopiedSlug(shortUrl)
+  async function handleCopy(slug: string) {
+    await navigator.clipboard.writeText(`${window.location.origin}/${slug}`)
+    setCopiedSlug(slug)
     setTimeout(() => setCopiedSlug(null), 2000)
   }
 
@@ -63,48 +63,47 @@ export default function Dashboard() {
       }} />
 
       {/* Navbar */}
-      <nav className="relative z-10 flex items-center justify-between px-8 py-5">
+      <nav className="relative z-10 flex items-center justify-between px-6 md:px-8 py-5">
         <span style={{
           fontFamily: 'var(--font-space-mono), monospace',
-          color: '#7c3aed',
-          fontSize: '15px',
-          letterSpacing: '.02em',
+          color: '#7c3aed', fontSize: '14px', letterSpacing: '.02em',
         }}>
           // davidnorato.dev
         </span>
-        <a href="/" className="text-sm px-4 py-2 rounded-lg transition-colors"
+        <a href="/" className="text-sm px-4 py-2 rounded-lg"
           style={{ color: '#5b369e', border: '1.5px solid #c4b5f4', backgroundColor: 'white' }}>
           ← Crear link
         </a>
       </nav>
 
-      <div className="relative z-10 max-w-5xl mx-auto px-8 py-8">
+      <div className="relative z-10 max-w-5xl mx-auto px-6 md:px-8 py-6">
 
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6">
           <p className="text-sm font-medium mb-1" style={{ color: '#7c3aed' }}>// mis links</p>
-          <h1 className="text-3xl font-bold" style={{ color: '#2d1b5e' }}>Dashboard</h1>
+          <h1 className="text-2xl md:text-3xl font-bold" style={{ color: '#2d1b5e' }}>Dashboard</h1>
         </div>
 
         {/* Stats cards */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-3 gap-3 md:gap-4 mb-6">
           {[
             { label: 'Total links', value: urls.length },
             { label: 'Total clicks', value: urls.reduce((acc, u) => acc + (u.analytics?.totalClicks || 0), 0) },
             { label: 'Links activos', value: urls.filter(u => u.isActive).length },
           ].map((stat) => (
-            <div key={stat.label} className="bg-white rounded-xl p-5" style={{ boxShadow: '0 2px 12px rgba(91,54,158,0.08)' }}>
-              <p className="text-sm mb-1" style={{ color: '#a99bc0' }}>{stat.label}</p>
-              <p className="text-3xl font-bold" style={{ color: '#2d1b5e' }}>{stat.value}</p>
+            <div key={stat.label} className="bg-white rounded-xl p-4 md:p-5"
+              style={{ boxShadow: '0 2px 12px rgba(91,54,158,0.08)' }}>
+              <p className="text-xs mb-1" style={{ color: '#a99bc0' }}>{stat.label}</p>
+              <p className="text-2xl md:text-3xl font-bold" style={{ color: '#2d1b5e' }}>{stat.value}</p>
             </div>
           ))}
         </div>
 
-        {/* URL List */}
-        <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: '0 2px 12px rgba(91,54,158,0.08)' }}>
-
-          {/* Table header */}
-          <div className="grid grid-cols-12 px-6 py-3 text-xs font-medium border-b" style={{ color: '#a99bc0', borderColor: '#ede9f6', backgroundColor: '#faf8ff' }}>
+        {/* URL List - Desktop table */}
+        <div className="hidden md:block bg-white rounded-2xl overflow-hidden"
+          style={{ boxShadow: '0 2px 12px rgba(91,54,158,0.08)' }}>
+          <div className="grid grid-cols-12 px-6 py-3 text-xs font-medium border-b"
+            style={{ color: '#a99bc0', borderColor: '#ede9f6', backgroundColor: '#faf8ff' }}>
             <span className="col-span-4">URL original</span>
             <span className="col-span-3">Link corto</span>
             <span className="col-span-2 text-center">Clicks</span>
@@ -112,71 +111,45 @@ export default function Dashboard() {
             <span className="col-span-1"></span>
           </div>
 
-          {/* Loading */}
           {loading && (
-            <div className="py-16 text-center" style={{ color: '#a99bc0' }}>
-              Cargando...
-            </div>
+            <div className="py-16 text-center" style={{ color: '#a99bc0' }}>Cargando...</div>
           )}
 
-          {/* Empty */}
           {!loading && urls.length === 0 && (
             <div className="py-16 text-center">
               <p className="text-lg font-medium mb-1" style={{ color: '#5b369e' }}>No tienes links aún</p>
-              <p className="text-sm" style={{ color: '#a99bc0' }}>
-                <a href="/" className="underline">Crea tu primer link</a>
-              </p>
+              <a href="/" className="text-sm underline" style={{ color: '#a99bc0' }}>Crea tu primer link</a>
             </div>
           )}
 
-          {/* Rows */}
-          {urls.map((url, i) => (
-            <div
-              key={url.id}
+          {urls.map((url) => (
+            <div key={url.id}
               className="grid grid-cols-12 px-6 py-4 items-center border-b last:border-b-0 hover:bg-purple-50 transition-colors"
-              style={{ borderColor: '#ede9f6' }}
-            >
-              {/* Original URL */}
+              style={{ borderColor: '#ede9f6' }}>
               <div className="col-span-4 pr-4">
-                <a
-                  href={url.originalUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm truncate block hover:underline"
-                  style={{ color: '#3b1f6e', maxWidth: '100%' }}
-                  title={url.originalUrl}
-                >
+                <a href={url.originalUrl} target="_blank" rel="noopener noreferrer"
+                  className="text-sm truncate block hover:underline" style={{ color: '#3b1f6e' }}
+                  title={url.originalUrl}>
                   {url.originalUrl}
                 </a>
               </div>
-
-              {/* Short URL */}
               <div className="col-span-3 pr-4">
                 <div className="flex items-center gap-2">
-                  <a
-                    href={`/${url.slug}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm font-medium hover:underline truncate"
-                    style={{ color: '#7c3aed' }}
-                  >
+                  <a href={`/${url.slug}`} target="_blank" rel="noopener noreferrer"
+                    className="text-sm font-medium hover:underline truncate" style={{ color: '#7c3aed' }}>
                     /{url.slug}
                   </a>
-                  <button
-                    onClick={() => handleCopy(url.slug)}
+                  <button onClick={() => handleCopy(url.slug)}
                     className="text-xs px-2 py-0.5 rounded shrink-0 transition-colors"
                     style={{
-                        border: `1px solid ${copiedSlug === url.slug ? '#a78bfa' : '#d4c9ee'}`,
-                        color: copiedSlug === url.slug ? '#7c3aed' : '#a99bc0',
-                        backgroundColor: copiedSlug === url.slug ? '#ede9f6' : 'transparent',
-                    }}
-                    >
+                      border: `1px solid ${copiedSlug === url.slug ? '#a78bfa' : '#d4c9ee'}`,
+                      color: copiedSlug === url.slug ? '#7c3aed' : '#a99bc0',
+                      backgroundColor: copiedSlug === url.slug ? '#ede9f6' : 'transparent',
+                    }}>
                     {copiedSlug === url.slug ? '✓ copiado' : 'copiar'}
-                    </button>
+                  </button>
                 </div>
               </div>
-
-              {/* Clicks */}
               <div className="col-span-2 text-center">
                 <a href={`/analytics/${url.slug}`} className="hover:underline">
                   <span className="text-sm font-semibold" style={{ color: '#5b369e' }}>
@@ -185,22 +158,79 @@ export default function Dashboard() {
                   <span className="text-xs ml-1" style={{ color: '#a99bc0' }}>clicks</span>
                 </a>
               </div>
-
-              {/* Date */}
               <div className="col-span-2 text-center">
                 <span className="text-xs" style={{ color: '#a99bc0' }}>
                   {new Date(url.createdAt).toLocaleDateString('es-CO', { day: '2-digit', month: 'short' })}
                 </span>
               </div>
-
-              {/* Delete */}
               <div className="col-span-1 flex justify-end">
-                <button
-                  onClick={() => handleDelete(url.slug)}
+                <button onClick={() => handleDelete(url.slug)}
                   disabled={deletingSlug === url.slug}
                   className="text-xs px-2 py-1 rounded transition-colors disabled:opacity-40"
-                  style={{ color: '#dc2626', border: '1px solid #fecaca' }}
-                >
+                  style={{ color: '#dc2626', border: '1px solid #fecaca' }}>
+                  {deletingSlug === url.slug ? '...' : 'Eliminar'}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* URL List - Mobile cards */}
+        <div className="md:hidden flex flex-col gap-3">
+          {loading && (
+            <div className="text-center py-10" style={{ color: '#a99bc0' }}>Cargando...</div>
+          )}
+
+          {!loading && urls.length === 0 && (
+            <div className="text-center py-10">
+              <p className="font-medium mb-1" style={{ color: '#5b369e' }}>No tienes links aún</p>
+              <a href="/" className="text-sm underline" style={{ color: '#a99bc0' }}>Crea tu primer link</a>
+            </div>
+          )}
+
+          {urls.map((url) => (
+            <div key={url.id} className="bg-white rounded-xl p-4"
+              style={{ boxShadow: '0 2px 12px rgba(91,54,158,0.08)' }}>
+
+              {/* Original URL */}
+              <a href={url.originalUrl} target="_blank" rel="noopener noreferrer"
+                className="text-sm block truncate mb-2 hover:underline" style={{ color: '#3b1f6e' }}>
+                {url.originalUrl}
+              </a>
+
+              {/* Short URL + copy */}
+              <div className="flex items-center justify-between mb-3">
+                <a href={`/${url.slug}`} target="_blank" rel="noopener noreferrer"
+                  className="text-sm font-medium hover:underline" style={{ color: '#7c3aed' }}>
+                  /{url.slug}
+                </a>
+                <button onClick={() => handleCopy(url.slug)}
+                  className="text-xs px-2 py-1 rounded transition-colors"
+                  style={{
+                    border: `1px solid ${copiedSlug === url.slug ? '#a78bfa' : '#d4c9ee'}`,
+                    color: copiedSlug === url.slug ? '#7c3aed' : '#a99bc0',
+                    backgroundColor: copiedSlug === url.slug ? '#ede9f6' : 'transparent',
+                  }}>
+                  {copiedSlug === url.slug ? '✓ copiado' : 'copiar'}
+                </button>
+              </div>
+
+              {/* Footer row */}
+              <div className="flex items-center justify-between pt-3"
+                style={{ borderTop: '1px solid #ede9f6' }}>
+                <a href={`/analytics/${url.slug}`} className="flex items-center gap-1 hover:underline">
+                  <span className="text-sm font-semibold" style={{ color: '#5b369e' }}>
+                    {url.analytics?.totalClicks || 0}
+                  </span>
+                  <span className="text-xs" style={{ color: '#a99bc0' }}>clicks</span>
+                </a>
+                <span className="text-xs" style={{ color: '#a99bc0' }}>
+                  {new Date(url.createdAt).toLocaleDateString('es-CO', { day: '2-digit', month: 'short' })}
+                </span>
+                <button onClick={() => handleDelete(url.slug)}
+                  disabled={deletingSlug === url.slug}
+                  className="text-xs px-2 py-1 rounded disabled:opacity-40"
+                  style={{ color: '#dc2626', border: '1px solid #fecaca' }}>
                   {deletingSlug === url.slug ? '...' : 'Eliminar'}
                 </button>
               </div>
