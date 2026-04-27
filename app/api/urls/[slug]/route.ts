@@ -30,26 +30,29 @@ export async function GET( request: NextRequest, { params }: { params: Promise<{
 }
 
 //DELETE
-export async function Delete(
-    request: NextRequest,
-    { params }: { params: Promise<{ slug: string }> }
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
 ) {
-    try {
-        const { slug } = await params
+  try {
+    const { slug } = await params
 
-        await db.url.delete({ where: { slug }})
-        await redis.del(slug)
-
-        return NextResponse.json({
-            message: "URL eliminada correctamente"
-        })
-    } catch (error) {
-        console.error("Error al eliminar URL:", error)
-        return NextResponse.json(
-            { error: "Error al eliminar URL" },
-            { status: 500 }
-        )
+    // Eliminar clicks primero
+    const url = await db.url.findUnique({ where: { slug } })
+    if (!url) {
+      return NextResponse.json({ error: 'URL no encontrada' }, { status: 404 })
     }
+
+    await db.click.deleteMany({ where: { urlId: url.id } })
+    await db.analytics.deleteMany({ where: { urlId: url.id } })
+    await db.url.delete({ where: { slug } })
+    await redis.del(slug)
+
+    return NextResponse.json({ message: 'URL eliminada correctamente' })
+  } catch (error) {
+    console.error('Delete error:', error)
+    return NextResponse.json({ error: 'Error interno' }, { status: 500 })
+  }
 }
 
 //PUT
