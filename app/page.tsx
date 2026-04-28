@@ -128,7 +128,7 @@ export default function Home() {
                 </label>
                 <div className="flex items-center rounded-lg overflow-hidden" style={{ border: '1.5px solid #d4c9ee' }}>
                   <span className="px-3 py-2.5 text-xs shrink-0" style={{ backgroundColor: '#f0edf8', color: '#a99bc0' }}>
-                    tudominio.com/
+                    davidnorato.dev/
                   </span>
                   <input
                     type="text"
