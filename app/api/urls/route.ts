@@ -38,8 +38,8 @@ export async function POST(request: NextRequest) {
 
         await redis.set(slug, originalUrl, { ex: 3600}) // Cache por 1 hora
 
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ||
-                        (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+        const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL ||
+                        (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')).replace(/\/$/, '')
 
         const shortUrl = `${baseUrl}/${slug}`
 
